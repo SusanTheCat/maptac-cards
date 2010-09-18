@@ -1,175 +1,245 @@
-// Config variables
 var gameDivId = "game";
-//Config end.
+var WIDTH = 130;
+var HEIGHT = 160;
 
 function createCard(card) { // Returns a HTML element for placing wherever in the page.
     var suit = card.getSuit();
     var rank = card.getRank();
-    var d = document.createElement("div");
-	d.setAttribute("class", "card");
-	d.innerHTML = "<div style='width:20px;text-align:center;color:#"+((suit=="h"||suit=="d")?"FF":"00")
-		+"0000'>"+rank+"</div><img src='img/"+suit+".png' style='height:18;width:18;'>"; // Ternary operator to determine card color. Nothing big.
-	switch (rank) { // Ugly hacky switch statement with cascading bits to cut down on code.
-		case 3: 
-			d.innerHTML += "<div class='b3'><img src='img/"+suit+".png'></div>";
-		case 2: 
-			d.innerHTML += "<div class='b1'><img src='img/"+suit+".png'></div>"
-						+  "<div class='b5'><img src='img/"+suit+".png'></div>";
-			break;
-		case "A": 
-			d.innerHTML += "<div class='a1'><br /><br /><img src='img/"+suit+".png' style='height:70;width:70;'></div>";
-			break;
-		case 8:
-			d.innerHTML += "<div class='b4'><img src='img/"+suit+".png'></div>";
-		case 7:
-			d.innerHTML += "<div class='b2'><img src='img/"+suit+".png'></div>";
-		case 6:
-			d.innerHTML += "<div class='a3'><img src='img/"+suit+".png'></div>"
-						+  "<div class='c3'><img src='img/"+suit+".png'></div>";
-		case 4:
-			d.innerHTML += "<div class='a1'><img src='img/"+suit+".png'></div>"
-						+  "<div class='a5'><img src='img/"+suit+".png'></div>"
-						+  "<div class='c1'><img src='img/"+suit+".png'></div>"
-						+  "<div class='c5'><img src='img/"+suit+".png'></div>";
-			break;
-		case 5:
-			d.innerHTML += "<div class='a1'><img src='img/"+suit+".png'></div>"
-						+  "<div class='a5'><img src='img/"+suit+".png'></div>"
-						+  "<div class='c1'><img src='img/"+suit+".png'></div>"
-						+  "<div class='c5'><img src='img/"+suit+".png'></div>"
-						+  "<div class='b3'><img src='img/"+suit+".png'></div>";
-			break;
-		case 9:
-			d.innerHTML += "<div class='a1'><img src='img/"+suit+".png'></div>"
-						+  "<div class='a2'><img src='img/"+suit+".png'></div>"
-						+  "<div class='a4'><img src='img/"+suit+".png'></div>"
-						+  "<div class='a5'><img src='img/"+suit+".png'></div>"
-						+  "<div class='c1'><img src='img/"+suit+".png'></div>"
-						+  "<div class='c2'><img src='img/"+suit+".png'></div>"
-						+  "<div class='c4'><img src='img/"+suit+".png'></div>"
-						+  "<div class='c5'><img src='img/"+suit+".png'></div>"
-						+  "<div class='b3'><img src='img/"+suit+".png'></div>";
-			break;
-		case 10:
-			d.innerHTML += "<div class='a1'><img src='img/"+suit+".png'></div>"
-						+  "<div class='a2'><img src='img/"+suit+".png'></div>"
-						+  "<div class='a4'><img src='img/"+suit+".png'></div>"
-						+  "<div class='a5'><img src='img/"+suit+".png'></div>"
-						+  "<div class='c1'><img src='img/"+suit+".png'></div>"
-						+  "<div class='c2'><img src='img/"+suit+".png'></div>"
-						+  "<div class='c4'><img src='img/"+suit+".png'></div>"
-						+  "<div class='c5'><img src='img/"+suit+".png'></div>"
-						+  "<div class='b2'><img src='img/"+suit+".png'></div>"
-						+  "<div class='b4'><img src='img/"+suit+".png'></div>";
-			break;
-		case "J":
-		case "Q":
-		case "K":
-			d.innerHTML += "<div class='a1'><img src='img/"+card.toString()+".png' style='height:128;width:78;'></div>";
-			// These images are very pixelly and not very nicely done. May change at some point.
-	}
-	d.getCard = function() {
-		return card;
-	};
-	return d;
+
+    var cardElement = new Element("div", {"class" : "card " + suit});
+    var text = new Element("div", {"class" : "text"});
+    text.innerHTML = rank;
+    cardElement.insert(text);
+    
+    cardElement.insert(new Element("img", {"src" : "img/" + suit + ".png", 
+					   "class" : "index"}));
+
+    function suitDiv(cls) {
+	var pip = new Element("div", {"class" : cls});
+	pip.insert(new Element("img", {"src" : "img/" + suit + ".png"}));
+	return pip;
+    }
+
+    cardElement.getCard = function () {
+	return card;
+    };
+
+    switch (rank) {
+    case 3: 
+	cardElement.insert(suitDiv("b3"));
+    case 2: 
+	cardElement.insert(suitDiv("b1"));
+	cardElement.insert(suitDiv("b5"));
+	break;
+    case "A": 
+	var element = suitDiv("a1");
+	element.setAttribute("class", "a1 ace");
+	cardElement.insert(element);
+	break;
+    case 8:
+	cardElement.insert(suitDiv("b4"));
+    case 7:
+	cardElement.insert(suitDiv("b2"));
+    case 6:
+	cardElement.insert(suitDiv("a3"));
+	cardElement.insert(suitDiv("c3"));
+    case 4:	
+	cardElement.insert(suitDiv("a1"));
+	cardElement.insert(suitDiv("a5"));
+	cardElement.insert(suitDiv("c1"));
+	cardElement.insert(suitDiv("c5"));
+	break;
+    case 5:
+	cardElement.insert(suitDiv("a1"));
+	cardElement.insert(suitDiv("a5"));
+	cardElement.insert(suitDiv("c1"));
+	cardElement.insert(suitDiv("c5"));
+	cardElement.insert(suitDiv("b3"));
+	break;
+    case 9:
+	cardElement.insert(suitDiv("a1"));
+	cardElement.insert(suitDiv("a2"));
+	cardElement.insert(suitDiv("a4"));
+	cardElement.insert(suitDiv("a5"));
+	cardElement.insert(suitDiv("c1"));
+	cardElement.insert(suitDiv("c2"));
+	cardElement.insert(suitDiv("c4"));
+	cardElement.insert(suitDiv("c5"));
+	cardElement.insert(suitDiv("b3"));
+	break;
+    case 10:
+	cardElement.insert(suitDiv("a1"));
+	cardElement.insert(suitDiv("a2"));
+	cardElement.insert(suitDiv("a4"));
+	cardElement.insert(suitDiv("a5"));
+	cardElement.insert(suitDiv("c1"));
+	cardElement.insert(suitDiv("c2"));
+	cardElement.insert(suitDiv("c4"));
+	cardElement.insert(suitDiv("c5"));
+	cardElement.insert(suitDiv("b2"));
+	cardElement.insert(suitDiv("b4"));
+	break;
+    case "J":
+    case "Q":
+    case "K":
+	var e = new Element("div", {"class" : "a1"});
+	var src = "img/" + card.toString() + ".png";
+	var img = new Element("img", {"class" : "face", "src" : src});
+
+	e.insert(img);
+	cardElement.insert(e);
+    }
+
+    return cardElement;
 }
+
 function indexOf(arr, val) {
-	for (var i=0; i<arr.length; i++) {
-		if(arr[i]==val) return i;
-	}
-	return -1;
+    for (var i=0; i<arr.length; i++) {
+	if(arr[i]==val) return i;
+    }
+
+    return -1;
 }
+//----------------------------------------------------------------------------//
 function newGame(game) {
-	var gameContainer = document.getElementById(gameDivId);
-	var piles = game.getPiles();
-	var arr = [];
-	var offset_x = 0;
-	var pileUI = function (pile) {
-		this.ui = pileDiv(pile);
+    var gameContainer = $(gameDivId);
+    var piles = game.getPiles();
+    var pilesUI = $A();
+
+    piles.each(function (element) {
+		   pilesUI.push(PileUI(element));
+	       });
+
+    function hasUIOfPile(pile) {
+	var present = false;
+	pilesUI.each(function (UI) {
+			 if (UI && UI.getPile() == pile) {
+			     present = true;
+			 }
+		     });
+    }
+
+    function getUIOf(pile) {
+	var retUI = null;
+	pilesUI.each(function (UI) {
+			 if (UI.getPile() == pile) {
+			     retUI = UI;
+			 }
+		     });
+	return retUI;
+    }
+
+    function PileUI(pile) {
+	var that = new Element("div", {"class" : "pile"});
+	var position = pile.getLocation() || new Location();
+	var item = position.getItem();
+	item = getUIOf(item);
+
+	if (!item) {
+	    that.setStyle("left : " + (position.getLeftOffset() - 1)
+			  * WIDTH);
+	    that.setStyle("top : " + position.getTopOffset() * HEIGHT);
+	} else {
+	    var left = parseInt(item.getStyle("left"));
+	    var top = parseInt(item.getStyle("top"));
+	    
+	    that.setStyle("left : " + 
+			  (left + position.getLeftOffset() * WIDTH) + "px");
+	    that.setStyle("top : " + 
+			  (top + (position.getTopOffset() - 1) * HEIGHT) + 
+			  "px");
+	}
+
+	that.getPile = function () {
+	    return pile;
 	};
-	function eventManager(e) {
-		if (e.type=="click") {
-			var target = e.target;
-			while (!target.getPile) {
-				target = target.parentElement;
-			}
-			target.getPile.act();
-		}
+
+	var cardElements = new Array();
+
+	var i = 0;
+	pile.getCards().each(function (card) {
+				 var cardElement = createCard(card);
+				 cardElement.setStyle("z-index : " + i);
+				 cardElement.setStyle("left :" + i / 2 );
+				 cardElement.setStyle("top :" + i / 2 );
+				 i++;
+
+				 that.insert(cardElement);
+				 cardElements.push(cardElement);
+			     });
+
+	that.getCardElements = function () {
+	    return cardElements;
+	};
+
+	that.getCardElement = function (card) {
+	    var cardElement = null;
+	    cardElements.each(function (element) {
+				  if (element.getCard() == card) {
+				      cardElement = element;
+				  }
+			      });
+
+	    return cardElement;
+	};
+
+	var obs = function () {
+	    this.getPile().act();
+	};
+
+	that.observe("click", obs.bind(that));
+
+	return that;
+    }
+
+    pilesUI.each(function (element) {
+		     gameContainer.insert(element);
+		 });
+
+    function getElementOf(card) {
+	var element;
+	pilesUI.each(function (ui) {
+			 if (ui.getCardElement(card)) {
+			     element = ui.getCardElement(card);
+			 }
+		     });
+	return element;
+    }
+
+    function doMove(move) {
+	if (move.source == move.destination) {
+	    console.log("NO MOVE!");
+	    game.selectCard(null);
+	    return;
 	}
-	function moveCards(e) {
-		var move = e.getMove();
-		if(move) {
-			var source = pileUI(move.source);
-			var dest = pileUI(move.destination);
-			var card = move.card;
-			source.removeCard(card);
-			dest.addCard(card);
-		}
-	}
-	game.observe(moveCards);
-	var divArray = [];
-	var pileUI = function (pile){
-		var d = document.createElement("div");
-		var pos;
-		if (pile) {
-			pos = pile.getPosition();
-		} else {
-			pos = new Position();
-		}
-		d.setAttribute("class", "pile");
-		var item = divArray[indexOf(arr, pos.getItem())] || document.getElementById(gameDivId);
-		d.style.left = ((item.style.left=="")?0:parseInt(item.style.left)) + pos.getLeftOffset()*130 - ((item.id!=gameDivId)?0:130);
-		d.style.top = ((item.style.left=="")?0:parseInt(item.style.top)) + pos.getTopOffset()*160 - ((item.id!=gameDivId)?160:0);
-		this.pileCards = pile.getCards();
-		d.getPile = pile;
-		var cardDivArray = [];
-		var m = d;
-		d.addCard = function(input) {
-			var card = createCard(input);
-			card.style.zIndex = i;
-			card.style.left = i/2;
-			card.style.top = i/2;
-			d.appendChild(card);
-			cardDivArray.push(card);
-		};
-		for (var i = 0; i<this.pileCards.length; i++) {
-			d.addCard(this.pileCards[i]);
-		}
-		offset_x += pile.getPosition()*120;
-		this.cardDivs = function() {
-			return cardDivArray;
-		};
-		d.getCard = function (card) {
-			return cardDivArray[indexOf(cardDivArray, card)];
-		};
-		m = d;
-		d.removeCard = function (card) {
-			cardDivArray.splice(indexOf(cardDivArray, card), 1);
-			return m.removeChild(m.getCard(card));
-		};
-		d.addEventListener("click", eventManager, false);
-		this.div = d;
-		return this;
-	}
-	
-	arr.contains = function (el) {
-		for (var i=0; i<arr.length; i++) if (arr[i]==el) return true;
-		return false;
-	}
-	var arrLength = arr.length;
-	while(0 < piles.length) {
-		for (var i=0; i<piles.length; i++) {
-			var item = piles[i].getPosition().getItem();
-			if (!item || (!arr.contains(piles[i]) && arr.contains(item))) {
-				arr.push(piles[i]);
-				piles.splice(i,1);
-			}
-		}
-		if(arr.length != arrLength) arrLength = arr.length;
-		else throw("Looks like at least two items are positioned relative to each other. Fix that.");
-	}
-	for (var i=0; i<arr.length; i++) {
-		divArray.push(pileUI(arr[i]).div);
-		document.getElementById(gameDivId).insertBefore(divArray[divArray.length-1], null);
-	}
+	var element = getElementOf(move.card);
+	var target = getUIOf(move.destination);
+	target.insert(element);
+	game.selectCard(null);
+    };
+
+    game.observe(function (event) {
+		     if (event.getMove()) {
+			 doMove(event.getMove());
+		     }
+
+		     if (event.selectChanged()) {
+			 console.log("Changed sel: ", 
+				     event.cardSelected().toString());
+			 if (event.cardSelected()) {
+			     var element = getElementOf(
+				 event.cardSelected());
+			     element.setStyle({borderColor : "#F00"});
+			 }
+
+			 if (event.getOldSel()) {
+			     console.log("barlg!");
+			     var e = getElementOf(event.getOldSel());
+			     console.log(e);
+			     e.setStyle({borderColor : "#808080"});
+			 }
+
+		     }
+		 });
 }
+

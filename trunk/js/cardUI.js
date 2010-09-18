@@ -83,9 +83,17 @@ function newGame(game) {
 	var offset_x = 0;	
 	var digitRegexp = new RegExp("\\d+");
 	function eventManager(e) {
-		if(e.type=="onclick") {
-			var target = e.target.id;
-			var index = digitRegexp.exec(e.target.id);
+		if (e.type=="click") {
+			var target = e.target;
+			console.log(target);
+			console.log(target.parentElement);
+			console.log(target.parentElement.parentElement);
+			while (target.id=="") {
+				target = target.parentElement;
+				console.log(target.id+"; "+target.parentElement.id);
+			}
+			var index = digitRegexp.exec(target.id);
+			console.log(index+"; "+arr[index]);
 			arr[index].act();
 		}
 	}
@@ -95,7 +103,8 @@ function newGame(game) {
 		d.setAttribute("class", "pile");
 		d.style.position = "relative";
 		var pos = pile.getPosition();
-		var item = document.getElementById("pile"+indexOf(arr, pos.getItem())) || document.getElementById(gameDivId);
+		var index = indexOf(arr, pos.getItem());
+		var item = document.getElementById("pile"+index) || document.getElementById(gameDivId);
 		d.style.left = digitRegexp.exec(item.style.left) + pos.getLeftOffset()*130;
 		d.style.top = digitRegexp.exec(item.style.top) + pos.getTopOffset()*160 - ((item.id!=gameDivId)?160:0);
 		var pileCards = pile.getCards();
@@ -104,10 +113,11 @@ function newGame(game) {
 			card.style.zIndex = i;
 			card.style.left = i/2;
 			card.style.top = i/2;
+			card.setAttribute("id", index);
 			d.appendChild(card);
 		}
 		offset_x += pile.getPosition()*120;
-		d.addEventListener("onclick", eventManager, true);
+		d.addEventListener("click", eventManager, true);
 		return d;
 	}
 	arr.contains = function (el) {

@@ -79,3 +79,7 @@ img {
     height : 70px;
     top : 30px;
 }
+
+.cover {
+	background-image:url('../img/cardBack.png');
+}

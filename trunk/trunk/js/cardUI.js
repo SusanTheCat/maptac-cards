@@ -233,7 +233,6 @@ function newGame(game) {
 			 }
 
 			 if (event.getOldSel()) {
-			     console.log("barlg!");
 			     var e = getElementOf(event.getOldSel());
 			     console.log(e);
 			     e.setStyle({borderColor : "#808080"});

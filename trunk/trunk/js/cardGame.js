@@ -77,6 +77,7 @@ function CardGame(options) {
 
     /* Selects the top card of the specified pile. */
     this.selectCardOnPile = function (pile) {
+	oldSel = selectCard;
 	selectedCard = pile.getCard();
 	fire(new GameChangeEvent({selected : card, cardMoved : false}));
     };

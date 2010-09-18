@@ -32,3 +32,11 @@ function Solitaire() {
 	downPiles.push(upPile);
     }
 }
+
+function normalPile(pile, card) {
+    if (card && card.getColor() != pile.getCard().getColor()) {
+	pile.moveCard(card);
+    } else if (!card) {
+	pile.selectTopCard();
+    }
+}

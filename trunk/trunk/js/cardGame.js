@@ -8,6 +8,7 @@ function CardGame(options) {
 
     // This is all of the piles on the playing field in this game:
     var piles = [];
+    var spacers = [];
 
     var oldSel = null;
     var selectedCard = null;// This is the selected card, if any.
@@ -30,7 +31,12 @@ function CardGame(options) {
      * after the game starts properly... This returns the added pile.
      */
     this.addPile = function (pile) {
-	piles.push(pile);
+	if (pile.getWidth) {
+	    spacers.push(pile);
+	} else {
+	    piles.push(pile);
+	}
+
 	return pile;
     };
 

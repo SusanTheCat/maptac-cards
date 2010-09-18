@@ -10,6 +10,14 @@ function createCard(card) { // Returns a HTML element for placing wherever in th
     var text = new Element("div", {"class" : "text"});
     text.innerHTML = rank;
     cardElement.insert(text);
+
+    cardElement.hl = function () {
+	this.setStyle({borderColor : "red"});
+    };
+
+    cardElement.dhl = function () {
+	this.setStyle({borderColor : "#808080"});	
+    };
     
     cardElement.insert(new Element("img", {"src" : "img/" + suit + ".png", 
 					   "class" : "index"}));
@@ -105,6 +113,7 @@ function newGame(game) {
     var gameContainer = $(gameDivId);
     var piles = game.getPiles();
     var pilesUI = $A();
+    var ces = $A();
 
     piles.each(function (element) {
 		   pilesUI.push(PileUI(element));
@@ -166,6 +175,7 @@ function newGame(game) {
 
 				 that.insert(cardElement);
 				 cardElements.push(cardElement);
+				 ces.push(cardElement);
 			     });
 
 	that.getCardElements = function () {
@@ -231,12 +241,13 @@ function newGame(game) {
     game.observe(function (event) {
 		     if (event.getMove()) {
 			 doMove(event.getMove());
+			 ces.each(function (e) {e.dhl();});
 		     }
 
 		     if (event.selectChanged()) {
-			 console.log("Changed sel: ", 
-				     event.cardSelected().toString());
+			 ces.each(function (e) {e.dhl();});
+			 var el = getElementOf(event.cardSelected());
+			 el.hl();
 		     }
 		 });
 }
-

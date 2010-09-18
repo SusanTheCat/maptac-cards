@@ -88,11 +88,10 @@ function newGame(game) {
 		d.style.position = "relative";
 		var pos = pile.getPosition();
 		var item = document.getElementById("pile"+indexOf(arr, pos.getItem())) || document.getElementById(gameDivId);
-		console.log(pos.getLeftOffset());
 		var m = new RegExp("\\d+");
 		d.style.left = m.exec(item.style.left) + pos.getLeftOffset()*130;
 		d.style.top = m.exec(item.style.top) + pos.getTopOffset()*160 - ((item.id!=gameDivId)?160:0);
-		console.log(d.id+"("+m.exec(d.style.left)+", "+m.exec(d.style.top)+"); "+item.id);
+		d.onclick = pile.act();
 		var pileCards = pile.getCards();
 		for (var i = 0; i<pileCards.length; i++) {
 			var card = createCard(pileCards[i]);

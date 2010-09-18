@@ -144,6 +144,10 @@ function newGame(game) {
 
     function PileUI(pile) {
 	var that = new Element("div", {"class" : "pile"});
+	if (pile.isFaceDown()) {
+	    that.setAttribute("class", "pile");
+	    that.insert(new Element("div", {"class" : "cover"}));
+	}
 	var position = pile.getLocation() || new Location();
 
 	blarg:
@@ -160,7 +164,7 @@ function newGame(game) {
 	    bl = true;
 	}
 	var lo = WIDTH * mi + 10;
-	var to = mm * HEIGHT + 10;
+	var to = mm * HEIGHT + 10 + mm * 20;
 	that.setStyle({left : lo + "px"});
 	that.setStyle({top : to + "px"});
 	mi++;
@@ -205,8 +209,9 @@ function newGame(game) {
 
 	that.observe("click", obs.bind(that));
 
-	if (pile.isFaceDown()) {
-	    that.insert(new Element("div", {"class" : "cover"}));
+	if (that.getPile().isFaceDown()) {
+	    console.log("blarg");
+//	    that.insert(new Element("div", {"class" : "cover"}));
 	}
 
 	return that;

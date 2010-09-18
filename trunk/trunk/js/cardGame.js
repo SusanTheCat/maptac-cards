@@ -404,7 +404,7 @@ function Pile(parent, position, options) {
      * boolean.
      */
     this.isFaceDown = function () {
-	return faceDown;
+	return options.faceDown;
     };
 
     /* Returns the number of cards in the pile. */

@@ -27,7 +27,7 @@ function Solitaire() {
 
     for (i = 0; i < 6; i++) {
 	var downPile = new Pile(game, new Location(downPiles[i]), 
-				{faceDown : true});
+				{faceDown : false});
 	game.dealToPile(downPile, i + 1);
 	var upPile = new Pile(game, new Location(downPile, {z : 1, left : 0},
 						 {action : normalPileAct}));
@@ -40,8 +40,8 @@ function Solitaire() {
     game.dealRemainderToPile(mainPile);
 
     function normalPileAct(pile, card) {
+	console.log("Normal Blagr");
 	if (card && card.getColor() != pile.getCard().getColor()) {
-	    console.log("Normal Blagr");
 	    pile.moveCard(card);
 	    return true;
 	} else if (!card) {
@@ -53,6 +53,7 @@ function Solitaire() {
 
     function faceDownPileAct(upPile) {
 	return function (pile, card) {
+	    console.log("Face-down Blagr");
 	    upPile.moveCard(pile.getCard());
 	    game.selectCard(null);
 	    return !card;
@@ -60,6 +61,7 @@ function Solitaire() {
     }
 
     function suitPileAct(pile, card) {
+	console.log("SSuit Blagr");
 	if ((pile.isEmpty() && card.getRank() == "A") ||
 	    (pile.getCard().getSuit() == card.getSuit() &&
 	     nextRank(pile.getCard().getRank()) == card.getRank())) {
@@ -73,6 +75,7 @@ function Solitaire() {
     }
 
     function mainPileAct(pile, card) {
+	console.log("main Blagr");
 	var topCard = pile.getCard();
 	discardPile.moveCard(topCard);
 	game.selectCard(null);
@@ -80,6 +83,7 @@ function Solitaire() {
     }
 
     function discardPileAct(pile, card) {
+	console.log("discard Blagr");
 	game.selectCard(pile.getCard());
 	return !card;
     }

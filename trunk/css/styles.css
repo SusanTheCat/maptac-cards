@@ -41,3 +41,6 @@ img {
     height:160px;
     width:110px;
 }
+.selected {
+    background-color:#00FFFF;
+}

@@ -5,12 +5,13 @@ function ExampleGame() {
     var pile2 = new Pile(game, pile2Pos);
     var deck = game.getDeck();
     deck.shuffle();
+
     for (var i = 0; i < deck.length; i++) {
-		if (Math.random() < 0.5) {
-			pile1.addCard(deck[i]);
-		} else {
-			pile2.addCard(deck[i]);
-		}
+	if (Math.random() < 0.5) {
+	    pile1.addCard(deck[i]);
+	} else {
+	    pile2.addCard(deck[i]);
+	}
     }
 
     return game;

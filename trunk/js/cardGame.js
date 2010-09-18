@@ -78,6 +78,11 @@ function CardGame(options) {
 	}
     };
 
+    /* Returns all of the piles currently in the game. */
+    this.getPiles = function () {
+	return piles;
+    };
+
     /* Fires the given event to all of the observers. */
     function fire(event) {
 	for (var i = 0; i < observers.length; i++) {

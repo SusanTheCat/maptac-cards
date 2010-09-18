@@ -46,3 +46,33 @@ img {
 .selected {
     background-color:#00FFFF;
 }
+
+.h, .d {
+    color : red;
+}
+
+.s, .c {
+    color : black;
+}
+
+.card .text {
+    width:20px;
+    text-align:center;
+}
+
+.card .face {
+    height:128;
+    width:78;
+}
+
+.card .index {
+    height:18;
+    width:18;
+}
+
+.card .ace img{
+    position : relative;
+    width  : 70px;
+    height : 70px;
+    top : 30px;
+}

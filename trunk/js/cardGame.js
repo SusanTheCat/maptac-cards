@@ -9,6 +9,7 @@ function CardGame(options) {
     // This is all of the piles on the playing field in this game:
     var piles = [];
 
+    var oldSel = null;
     var selectedCard = null;// This is the selected card, if any.
 
     var observers = [];// All observers to be notified of changes.
@@ -69,6 +70,7 @@ function CardGame(options) {
 
     /* Selects the specified card, firing the appropriate event. */
     this.selectCard = function (card) {
+	oldSel = selectedCard;
 	selectedCard = card;
 	fire(new GameChangeEvent({selected : card, cardMoved : false}));
     };
@@ -167,16 +169,18 @@ function CardGame(options) {
 	options.selected = options.selected || selectedCard;
 
 	var move = options.move;
-	console.log("The move is:");
-	console.log(move);
 
 	/* Returns whether a card was moved as part of this event. */
 	this.cardMoved = function () {
 	    if (move) {
-		return move.pile1 != move.pile2;
+		return move.source != move.destination;
 	    } else {
 		return false;
 	    }
+	};
+
+	this.getOldSel = function () {
+	    return oldSel;
 	};
 
 	/* Returns the move this event represents or null if there was no 
@@ -200,7 +204,7 @@ function CardGame(options) {
 	this.cardsMoved = function () {
 	    if (options.cardsMoved) {
 		return cardsMoved;
-	    } else if (move && (move.pile1 != move.pile2)) {
+	    } else if (move && (move.source != move.destination)) {
 		return [move.card];
 	    } else {
 		return null;
@@ -333,7 +337,7 @@ function Card(rank, suit) {
  */
 function Pile(parent, position, options) {
     options = options || {};
-    position = position || new Position();
+    position = position || new Location();
     var faceDown = faceDown ? true : false;
     var numCards = options.cards || 0;
 
@@ -343,7 +347,6 @@ function Pile(parent, position, options) {
     // This is the action that is called when the pile gets a card or click.
     var action = options.action || function (pile, card) {
 	if (card) {
-	    console.log(card);
 	    parent.moveCard(card.getPile(), pile);
 	} else {
 	    pile.selectTopCard();
@@ -374,7 +377,7 @@ function Pile(parent, position, options) {
     };
 
     /* Returns the position of the pile relative to other piles or the field. */
-    this.getPosition = function () {
+    this.getLocation = function () {
 	return position;
     };
 
@@ -480,7 +483,7 @@ function Spacer(parent, width, position) {
     position = position || newosition();
 
     /* Returns the position of this spacer relative to something else...*/
-    this.getPosition = function () {
+    this.getLocation = function () {
 	return position;
     };
 
@@ -506,7 +509,7 @@ function Spacer(parent, width, position) {
  * appropriate, so -0.5 would move the given element half of a pile over to the 
  * left if given to the left property.
  */
-function Position(item, modification) {
+function Location(item, modification) {
     modification = modification || {};
 
     /* Returns which item this position is relative to. */

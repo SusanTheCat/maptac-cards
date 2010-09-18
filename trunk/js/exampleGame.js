@@ -1,7 +1,7 @@
 function ExampleGame() {
     var game = new CardGame();
     var pile1 = new Pile(game);
-    var pile2Pos = new Position(pile1, {left : 1});
+    var pile2Pos = new Location(pile1, {left : 1});
     var pile2 = new Pile(game, pile2Pos);
     var deck = game.getDeck();
     deck.shuffle();

@@ -90,12 +90,10 @@ function newGame(game) {
 	function eventManager(e) {
 		if (e.type=="click") {
 			var target = e.target;
-			while (target.id=="") {
+			while (!target.getPile) {
 				target = target.parentElement;
 			}
-			var index = parseInt(target.id);
-			console.log(index+"; "+arr[index]);
-			arr[index].act();
+			target.getPile.act();
 		}
 	}
 	var divArray = [];
@@ -109,13 +107,13 @@ function newGame(game) {
 		}
 		d.setAttribute("class", "pile");
 		var item = divArray[indexOf(arr, pos.getItem())] || document.getElementById(gameDivId);
-		console.log(item.id!=gameDivId);
 		d.style.left = ((item.style.left=="")?0:parseInt(item.style.left)) + pos.getLeftOffset()*130 - ((item.id!=gameDivId)?0:130);
 		d.style.top = ((item.style.left=="")?0:parseInt(item.style.top)) + pos.getTopOffset()*160 - ((item.id!=gameDivId)?160:0);
-		var pileCards = pile.getCards();
+		d.pileCards = pile.getCards();
+		d.getPile = pile;
 		var cardDivArray = [];
-		for (var i = 0; i<pileCards.length; i++) {
-			var card = createCard(pileCards[i]);
+		for (var i = 0; i<d.pileCards.length; i++) {
+			var card = createCard(d.pileCards[i]);
 			card.style.zIndex = i;
 			card.style.left = i/2;
 			card.style.top = i/2;
@@ -126,6 +124,7 @@ function newGame(game) {
 		d.cardDivs = function() {
 			return cardDivArray;
 		};
+		d.addEventListener("click", eventManager, false);
 		return d;
 	}
 	

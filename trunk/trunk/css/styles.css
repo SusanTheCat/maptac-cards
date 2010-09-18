@@ -81,5 +81,7 @@ img {
 }
 
 .cover {
-	background-image:url('../img/cardBack.png');
+	background:url('../img/cardBack.png');
+	background-repeat:no-repeat;
+	z-index:1000;
 }

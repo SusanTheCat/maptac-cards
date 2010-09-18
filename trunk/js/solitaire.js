@@ -2,33 +2,34 @@
 function Solitaire() {
     var game = new CardGame();
 
-    var mainPile = new Pile(game, new Position(), 
+    var mainPile = new Pile(game, new Location(), 
 			    {faceDown : true, action : mainPileAct});
 
-    var discardPile = new Pile(game, new Position(mainPile),
+    var discardPile = new Pile(game, new Location(mainPile),
 			      {action : discardPileAct});
 
-    var spacer = new Spacer(game, 0.5, new Position(discardPile));
+    var spacer = new Spacer(game, 0.5, new Location(discardPile));
 
     var suitPiles = [];
-    suitPiles.push(new Pile(game, new Position(spacer),
+    suitPiles.push(new Pile(game, new Location(spacer),
 			   {action : suitPileAct}));
     for (var i = 0; i < 3; i++) {
-	suitPiles.push(new Pile(game, new Position(suitPiles[i]),
+	suitPiles.push(new Pile(game, new Location(suitPiles[i]),
 			       {action : suitPileAct}));
     }
 
     var downPiles = [];
 
-    var downPos = new Position(mainPile, {top : 1, left : 1});
-    downPiles.push(new Pile(game, downPos, {action : normalPileAct}));
+    var downPos = new Location(mainPile, {top : 1, left : 1});
+	var leftMostPile = new Pile(game, downPos, {action : normalPileAct});
+    downPiles.push(leftMostPile);
     game.dealToPile(leftMostPile, 1);
 
     for (i = 0; i < 6; i++) {
-	var downPile = new Pile(game, new Position(downPiles[i]), 
+	var downPile = new Pile(game, new Location(downPiles[i]), 
 				{faceDown : true});
 	game.dealToPile(downPile, i + 1);
-	var upPile = new Pile(game, new Position(downPile, {z : 1, left : 0},
+	var upPile = new Pile(game, new Location(downPile, {z : 1, left : 0},
 						 {action : normalPileAct}));
 	game.dealToPile(upPile, 1);
 	downPile.setAction(faceDownPileAct(upPile));
@@ -79,4 +80,5 @@ function Solitaire() {
 	game.selectCard(pile.getCard());
 	return !card;
     }
+	return game;
 }

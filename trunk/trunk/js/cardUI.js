@@ -214,6 +214,16 @@ function newGame(game) {
 	}
 	var element = getElementOf(move.card);
 	var target = getUIOf(move.destination);
+	var num = target.getPile().numberOfCards();
+	element.setStyle({zIndex : num});
+	var dof = move.source.numberOfCards() - num;
+	dof /= 2;
+	var t = parseInt(element.getStyle("top"));
+	var l = parseInt(element.getStyle("left"));
+	t -= dof;
+	l -= dof;
+	element.setStyle({top : t, left : l});
+
 	target.insert(element);
 	game.selectCard(null);
     };
@@ -226,18 +236,6 @@ function newGame(game) {
 		     if (event.selectChanged()) {
 			 console.log("Changed sel: ", 
 				     event.cardSelected().toString());
-			 if (event.cardSelected()) {
-			     var element = getElementOf(
-				 event.cardSelected());
-			     element.setStyle({borderColor : "#F00"});
-			 }
-
-			 if (event.getOldSel()) {
-			     var e = getElementOf(event.getOldSel());
-			     console.log(e);
-			     e.setStyle({borderColor : "#808080"});
-			 }
-
 		     }
 		 });
 }

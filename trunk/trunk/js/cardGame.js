@@ -70,14 +70,14 @@ function CardGame(options) {
 
     /* Selects the specified card, firing the appropriate event. */
     this.selectCard = function (card) {
-	oldSel = selectedCard;
+	oldSel = selectedCard || oldSel;
 	selectedCard = card;
 	fire(new GameChangeEvent({selected : card, cardMoved : false}));
     };
 
     /* Selects the top card of the specified pile. */
     this.selectCardOnPile = function (pile) {
-	oldSel = selectCard;
+	oldSel = selectedCard || oldSel;
 	selectedCard = pile.getCard();
 	fire(new GameChangeEvent({selected : card, cardMoved : false}));
     };
@@ -181,6 +181,7 @@ function CardGame(options) {
 	};
 
 	this.getOldSel = function () {
+	    console.log(oldSel);
 	    return oldSel;
 	};
 

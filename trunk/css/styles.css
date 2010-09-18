@@ -8,6 +8,7 @@
     background:#FFFFFF;
     border-style: dotted solid solid dotted;
     border-color: #808080;
+    cursor : pointer;
 }
 
 .a1 { position: absolute; left: 21px; top: 10px; }

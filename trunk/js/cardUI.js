@@ -81,16 +81,12 @@ function newGame(game) {
 	var piles = game.getPiles();
 	var arr = new Array();
 	var offset_x = 0;	
-	var digitRegexp = new RegExp("\\d+");
+	var digitRegexp = new RegExp(/\d+/);
 	function eventManager(e) {
 		if (e.type=="click") {
 			var target = e.target;
-			console.log(target);
-			console.log(target.parentElement);
-			console.log(target.parentElement.parentElement);
 			while (target.id=="") {
 				target = target.parentElement;
-				console.log(target.id+"; "+target.parentElement.id);
 			}
 			var index = digitRegexp.exec(target.id);
 			console.log(index+"; "+arr[index]);
@@ -105,8 +101,8 @@ function newGame(game) {
 		var pos = pile.getPosition();
 		var index = indexOf(arr, pos.getItem());
 		var item = document.getElementById("pile"+index) || document.getElementById(gameDivId);
-		d.style.left = digitRegexp.exec(item.style.left) + pos.getLeftOffset()*130;
-		d.style.top = digitRegexp.exec(item.style.top) + pos.getTopOffset()*160 - ((item.id!=gameDivId)?160:0);
+		d.style.left = (item.style.left==""?0:parseInt(item.style.left)) + pos.getLeftOffset()*130 - ((item.id!=gameDivId)?0:130);
+		d.style.top = (item.style.left==""?0:parseInt(item.style.top)) + pos.getTopOffset()*160 - ((item.id!=gameDivId)?160:0);
 		var pileCards = pile.getCards();
 		for (var i = 0; i<pileCards.length; i++) {
 			var card = createCard(pileCards[i]);

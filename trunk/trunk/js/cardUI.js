@@ -96,8 +96,19 @@ function newGame(game) {
 			target.getPile.act();
 		}
 	}
+	function moveCards(e) {
+		var move = e.getMove();
+		if(move) {
+			var source = pileUI(move.source);
+			var dest = pileUI(move.destination);
+			var card = move.card;
+			source.removeCard(card);
+			dest.addCard(card);
+		}
+	}
+	game.observe(moveCards);
 	var divArray = [];
-	function pileDiv(pile) {
+	var pileUI = function (pile){
 		var d = document.createElement("div");
 		var pos;
 		if (pile) {
@@ -109,23 +120,36 @@ function newGame(game) {
 		var item = divArray[indexOf(arr, pos.getItem())] || document.getElementById(gameDivId);
 		d.style.left = ((item.style.left=="")?0:parseInt(item.style.left)) + pos.getLeftOffset()*130 - ((item.id!=gameDivId)?0:130);
 		d.style.top = ((item.style.left=="")?0:parseInt(item.style.top)) + pos.getTopOffset()*160 - ((item.id!=gameDivId)?160:0);
-		d.pileCards = pile.getCards();
+		this.pileCards = pile.getCards();
 		d.getPile = pile;
 		var cardDivArray = [];
-		for (var i = 0; i<d.pileCards.length; i++) {
-			var card = createCard(d.pileCards[i]);
+		var m = d;
+		d.addCard = function(input) {
+			var card = createCard(input);
 			card.style.zIndex = i;
 			card.style.left = i/2;
 			card.style.top = i/2;
 			d.appendChild(card);
 			cardDivArray.push(card);
+		};
+		for (var i = 0; i<this.pileCards.length; i++) {
+			d.addCard(this.pileCards[i]);
 		}
 		offset_x += pile.getPosition()*120;
-		d.cardDivs = function() {
+		this.cardDivs = function() {
 			return cardDivArray;
 		};
+		d.getCard = function (card) {
+			return cardDivArray[indexOf(cardDivArray, card)];
+		};
+		m = d;
+		d.removeCard = function (card) {
+			cardDivArray.splice(indexOf(cardDivArray, card), 1);
+			return m.removeChild(m.getCard(card));
+		};
 		d.addEventListener("click", eventManager, false);
-		return d;
+		this.div = d;
+		return this;
 	}
 	
 	arr.contains = function (el) {
@@ -145,7 +169,7 @@ function newGame(game) {
 		else throw("Looks like at least two items are positioned relative to each other. Fix that.");
 	}
 	for (var i=0; i<arr.length; i++) {
-		divArray.push(pileDiv(arr[i]));
+		divArray.push(pileUI(arr[i]).div);
 		document.getElementById(gameDivId).insertBefore(divArray[divArray.length-1], null);
 	}
 }

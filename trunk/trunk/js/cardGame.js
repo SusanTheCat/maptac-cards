@@ -43,6 +43,14 @@ function CardGame(options) {
 	}
     };
 
+    /* Deals the given number of cards to the specified pile, firing an event 
+     * that contains information about all of the cards dealt to that pile.
+     */
+    this.dealToPile = function (pile, number) {
+	//TODO: Implement...
+    };
+
+    /* Selects the specified card, firing the appropriate event. */
     this.selectCard = function (card) {
 	selectedCard = card;
 	fire(new GameChangeEvent({selected : card}));
@@ -273,6 +281,7 @@ function Pile(parent, options) {
     options = options || {};
     var position = options.position || new Position();
     var faceDown = faceDown ? true : false;
+    var numCards = options.cards || 0;
 
     // This is where the cards go...
     var cards = [];
@@ -285,6 +294,10 @@ function Pile(parent, options) {
 	    parent.setActiveCard(this.getCard());
 	}
     };
+
+    if (numCards) {
+	parent.dealToPile(this, numCards);
+    }
 
     /* Sets the action that will be performed when the pile either gets a card or
      * gets clicked on. Usually this will either put the given card on the pile
@@ -406,7 +419,7 @@ function Spacer(width, position) {
 
 /* This represents the position of an element on the playing field. It takes an
  * item, which is what the position is based on. If the item is null or the game,
-p * then the position is relative to the origin (0, 0) of the playing field. The
+ * then the position is relative to the origin (0, 0) of the playing field. The
  * modification is an object which allows the specification of offsets to the
  * left and right of where this would have been without those offsets. These
  * should be specified as ratios of the width or height of a pile, as 
@@ -414,6 +427,8 @@ p * then the position is relative to the origin (0, 0) of the playing field. The
  * left if given to the left property.
  */
 function Position(item, modification) {
+    modification = modification || {};
+
     /* Returns which item this position is relative to. */
     this.getItem = function () {
 	return item;
@@ -422,7 +437,7 @@ function Position(item, modification) {
     /* Returns the left offset of the item. This is a ratio of the width of a
      * pile.
      */
-    this.getLeftoffset = function () {
+    this.getLeftOffset = function () {
 	return modification.left || 0;
     };
 

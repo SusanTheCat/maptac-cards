@@ -3,10 +3,13 @@
 /* Represents the actual game; this is what gets and updates observers! */
 function CardGame(options) {
     options = options || {};
+
     var deck = options.deck || Deck();
 
     // This is all of the piles on the playing field in this game:
     var piles = [];
+
+    var activeCard = null;// This is the selected card, if any.
 
     var observers = [];// All observers to be notified of changes.
 
@@ -18,6 +21,27 @@ function CardGame(options) {
     /* Sets the deck for this game. */
     this.setDeck = function(newDeck) {
 	deck = newDeck;
+    };
+
+    /* Adds the specified pile to the list of piles. */
+    this.addPile = function (pile) {
+	piles.push(pile);
+    };
+
+    /* Removes the specified pile from the list of piles. If the given pile is 
+     * not in the list, nothing happens.
+     */
+    this.removePile = function (pile) {
+	for (var i = 0; i < piles.length; i++) {
+	    if (pile == piles[i]) {
+		piles.splice(i);
+	    }
+	}
+    };
+
+    /* Selects the top card of the specified pile. */
+    this.selectCardOnPile = function (pile) {
+	activeCard = pile.getCard();
     };
 
     /* Moves the top card of the specified pile to the top of the second 
@@ -49,7 +73,7 @@ function CardGame(options) {
     this.removeObserver = function (observer) {
 	for (var i = 0; i < observers.length; i++) {
 	    if (observer == observers[i]) {
-		delete observers[i];
+		observers.splice(i, 1);
 	    }
 	}
     };
@@ -60,7 +84,7 @@ function CardGame(options) {
 	    try {
 		observers[i](event);
 	    } catch (x) {
-		delete observers[i];
+		observers.splice(i, 1);
 	    }
 	}
     }
@@ -113,6 +137,8 @@ function Deck(cards) {
  * implemented at a later date.
  */
 function Card(rank, suit) {
+    var pile = null;// No pile by default.
+
     switch (rank) {
 	case 1:
 	rank = "A";
@@ -150,15 +176,34 @@ function Card(rank, suit) {
     this.toString = function () {
 	return rank + suit;
     };
+
+    /* Sets the pile that contains this card. This does not actually move the
+     * card at the moment.
+     */
+    this.setPile = function (newPile) {
+	pile = newPile;
+    };
+
+    /* Returns the card's current pile or null if there is not pile. */
+    this.getPile = function () {
+	return pile;
+    };
 }
 
 /* Represents a physical pile of cards lying on the table. This doesn't actually
  * have to have any cards in it--it is just a place where cards could be. This
  * takes several options when created: position, relative to another pile or the
  * edge of the field; faceDown: if true, the cards will not be shown (default is 
- * false). A pile can also represent a place for cards to go.
+ * false). A pile can also represent a place for cards to go. 
+ * 
+ * A pile has an "action" which is a function that will be called when the pile 
+ * is in some way activated (e.g. it is clicked or a card is dragged there). The 
+ * pile will then respond to the action as it should. The action gets two 
+ * arguments: first the pile and then the card that may or may not have been 
+ * passed to the pile. The default action is to select the top card if it is not
+ * selected and to move the given card to the pile if there is one.
  */
-function Pile(options) {
+function Pile(parent, options) {
     options = options || {};
     var position = options.position || {topLeft : true};
     var faceDown = faceDown ? true : false;
@@ -166,10 +211,37 @@ function Pile(options) {
     // This is where the cards go...
     var cards = [];
 
+    // This is the action that is called when the pile gets a card or click.
+    var action = options.action || function (pile, card) {
+	if (card) {
+	    card.getPile().removeCard(card);
+	    pile.addCard(card);
+	} else {
+	    parent.setActiveCard(this.getCard());
+	}
+    };
+
+    /* Sets the action that will be performed when the pile either gets a card or
+     * gets clicked on. Usually this will either put the given card on the pile
+     * or select the top card of the pile. The first argument the action gets is
+     * the pile that called it.
+     */
+    this.setAction = function (newAction) {
+	action = newAction;
+    };
+
     /* Returns the position of the pile relative to other piles or the field. */
     this.getPosition = function () {
 	// TODO: rework position properly
 	return position;
+    };
+
+    /* This should be fired if the pile is given a card or clicked. If it is 
+     * given a card, that card should be passed here; otherwise some falsey value
+     * (undefined is good here) should be given.
+     */
+    this.act = function (card) {
+	action(this, card);
     };
 
     /* Returns whether this is a face-down pile or not. Should always return a
@@ -206,6 +278,30 @@ function Pile(options) {
 	return cards[position];
     };
 
+    /* Removes the specified card from the pile. If the card is not in the pile,
+     * nothing happens.
+     */
+    this.removeCard = function (card) {
+	for (var i = 0; i < cards.length; i++) {
+	    if (card == cards[i]) {
+		cards.splice(i, 1);
+	    }
+	}
+    };
+
+    /* Removes the card at the given position and returns it. If the position is
+     * out of bounds, returns null.
+     */
+    this.removeCardAt = function (position) {
+	if (position < 0 || position >= cards.length) {
+	    return null;
+	}
+	
+	var card = cards[i];
+	cards.splice(i, 1);
+	return card;
+    };
+
     /* Returns an array of all of the cards currently in the pile. */
     this.getCards = function () {
 	return cards;
@@ -225,7 +321,7 @@ function Pile(options) {
  * as a pile.
  */
 function Spacer(width, position) {
-    position = position || {right : "left-border"};
+    position = position || new Position();
 
     /* Returns the position of this spacer relative to something else...*/
     this.getPosition = function () {
@@ -269,10 +365,14 @@ function Position(item, modification) {
     this.getTopOffset = function () {
 	return modification.top || 0;
     };
+
+    this.getZOffset = function () {
+	return modification.z || 0;
+    };
 }
 
 /* An event encapsulating the change in the game state. This should give enough
- * 
+ * information to keep the game completely up to date.
  */
 function GameChangeEvent(options) {
     options = options || {};

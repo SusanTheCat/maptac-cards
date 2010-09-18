@@ -9,7 +9,7 @@ function CardGame(options) {
     // This is all of the piles on the playing field in this game:
     var piles = [];
 
-    var activeCard = null;// This is the selected card, if any.
+    var selectedCard = null;// This is the selected card, if any.
 
     var observers = [];// All observers to be notified of changes.
 
@@ -18,18 +18,22 @@ function CardGame(options) {
 	return deck;
     };
 
-    /* Sets the deck for this game. */
+    /* Sets the deck for this game. This probably shouldn't be used after the 
+     * game starts...
+     */
     this.setDeck = function(newDeck) {
 	deck = newDeck;
     };
 
-    /* Adds the specified pile to the list of piles. */
+    /* Adds the specified pile to the list of piles. Once again, avoid using this
+     * after the game starts properly...
+     */
     this.addPile = function (pile) {
 	piles.push(pile);
     };
 
     /* Removes the specified pile from the list of piles. If the given pile is 
-     * not in the list, nothing happens.
+     * not in the list, nothing happens. Ditto for not using during a game.
      */
     this.removePile = function (pile) {
 	for (var i = 0; i < piles.length; i++) {
@@ -39,9 +43,15 @@ function CardGame(options) {
 	}
     };
 
+    this.selectCard = function (card) {
+	selectedCard = card;
+	fire(new GameChangeEvent({selected : card}));
+    };
+
     /* Selects the top card of the specified pile. */
     this.selectCardOnPile = function (pile) {
-	activeCard = pile.getCard();
+	selectedCard = pile.getCard();
+	fire(new GameChangeEvent({selected : card}));
     };
 
     /* Moves the top card of the specified pile to the top of the second 
@@ -55,6 +65,28 @@ function CardGame(options) {
 	var move = {
 	    source : pile1,
 	    destination : pile2,
+	    card : card
+	};
+	var event = new GameChangeEvent(event);
+
+	fire(event);
+    };
+
+    /* Moves the specified card to the specified pile, removing it from its
+     * current pile if necessary and firing the appropriate event.
+     */
+    this.moveCardToPile = function (card, pile) {
+	var oldPile = card.getPile();
+
+	if (oldPile) {
+	    oldPile.removeCard(card);
+	}
+
+	pile.addCard(card);
+
+	var move = {
+	    source : oldPile,
+	    destination : pile,
 	    card : card
 	};
 	var event = new GameChangeEvent(event);
@@ -93,6 +125,35 @@ function CardGame(options) {
 	    }
 	}
     }
+
+    /* An event encapsulating the change in the game state. This should give
+     * enough information to keep the game completely up to date.
+     */
+    function GameChangeEvent(options) {
+	options = options || {};
+
+	var selectChange = options.selected ? true : false;
+	options.selected = options.selected || selectedCard;
+
+	/* Returns either null or the move of a card. The move will contain the 
+	 * source (where the card was), the destination (where it is now) and the
+	 * card itself.
+	 */
+	this.cardMoved = function () {
+	    return options.move;
+	};
+
+	/* Returns the card that is selected after this event. */
+	this.cardSelected = function () {
+	    return options.selected;
+	};
+
+	/* Returns whether the selected card changed causing this event. */
+	this.selectChanged = function () {
+	    return selectChanged;
+	};
+    }
+
 }
 
 /* A deck object. The deck has cards but no physical pile. The default 
@@ -210,7 +271,7 @@ function Card(rank, suit) {
  */
 function Pile(parent, options) {
     options = options || {};
-    var position = options.position || {topLeft : true};
+    var position = options.position || new Position();
     var faceDown = faceDown ? true : false;
 
     // This is where the cards go...
@@ -345,7 +406,7 @@ function Spacer(width, position) {
 
 /* This represents the position of an element on the playing field. It takes an
  * item, which is what the position is based on. If the item is null or the game,
- * then the position is relative to the origin (0, 0) of the playing field. The
+p * then the position is relative to the origin (0, 0) of the playing field. The
  * modification is an object which allows the specification of offsets to the
  * left and right of where this would have been without those offsets. These
  * should be specified as ratios of the width or height of a pile, as 
@@ -372,22 +433,8 @@ function Position(item, modification) {
 	return modification.top || 0;
     };
 
+    /* Returns the z-offset of the element relative to the other element. */
     this.getZOffset = function () {
 	return modification.z || 0;
-    };
-}
-
-/* An event encapsulating the change in the game state. This should give enough
- * information to keep the game completely up to date.
- */
-function GameChangeEvent(options) {
-    options = options || {};
-
-    /* Returns either null or the move of a card. The move will contain the 
-     * source (where the card was), the destination (where it is now) and the
-     * card itself.
-     */
-    this.cardMoved = function () {
-	return options.move;
     };
 }

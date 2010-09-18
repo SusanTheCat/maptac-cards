@@ -1,13 +1,13 @@
 .card {
     height:140px;
     width:100px;
-    border-style:dotted solid solid dotted;
     font-family:Verdana;
     padding:4px;
     font-size:85%;
     position:absolute;
     background:#FFFFFF;
-    border-color:#808080;
+    border-style: dotted solid solid dotted;
+    border-color: #808080;
 }
 
 .a1 { position: absolute; left: 21px; top: 10px; }

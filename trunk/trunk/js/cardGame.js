@@ -214,8 +214,7 @@ function Pile(parent, options) {
     // This is the action that is called when the pile gets a card or click.
     var action = options.action || function (pile, card) {
 	if (card) {
-	    card.getPile().removeCard(card);
-	    pile.addCard(card);
+	    parent.moveCard(card.getPile(), this);
 	} else {
 	    parent.setActiveCard(this.getCard());
 	}
@@ -232,7 +231,6 @@ function Pile(parent, options) {
 
     /* Returns the position of the pile relative to other piles or the field. */
     this.getPosition = function () {
-	// TODO: rework position properly
 	return position;
     };
 
@@ -268,6 +266,8 @@ function Pile(parent, options) {
 	} else {
 	    cards.push(card);
 	}
+
+	card.setPile(this);
     };
     
     /* Gets the card at the specified position. If no position is given, this
@@ -284,6 +284,7 @@ function Pile(parent, options) {
     this.removeCard = function (card) {
 	for (var i = 0; i < cards.length; i++) {
 	    if (card == cards[i]) {
+		card.setPile(null);
 		cards.splice(i, 1);
 	    }
 	}
@@ -321,7 +322,7 @@ function Pile(parent, options) {
  * as a pile.
  */
 function Spacer(width, position) {
-    position = position || new Position();
+    position = position || newosition();
 
     /* Returns the position of this spacer relative to something else...*/
     this.getPosition = function () {

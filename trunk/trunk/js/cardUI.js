@@ -68,6 +68,9 @@ function createCard(card) { // Returns a HTML element for placing wherever in th
 			d.innerHTML += "<div class='a1'><img src='img/"+card.toString()+".png' style='height:128;width:78;'></div>";
 			// These images are very pixelly and not very nicely done. May change at some point.
 	}
+	d.getCard = function() {
+		return card;
+	};
 	return d;
 }
 function indexOf(arr, val) {
@@ -79,65 +82,71 @@ function indexOf(arr, val) {
 function newGame(game) {
 	var gameContainer = document.getElementById(gameDivId);
 	var piles = game.getPiles();
-	var arr = new Array();
-	var offset_x = 0;	
-	var digitRegexp = new RegExp(/\d+/);
+	var arr = [];
+	var offset_x = 0;
+	var pileUI = function (pile) {
+		this.ui = pileDiv(pile);
+	};
 	function eventManager(e) {
 		if (e.type=="click") {
 			var target = e.target;
 			while (target.id=="") {
 				target = target.parentElement;
 			}
-			var index = digitRegexp.exec(target.id);
+			var index = parseInt(target.id);
 			console.log(index+"; "+arr[index]);
 			arr[index].act();
 		}
 	}
+	var divArray = [];
 	function pileDiv(pile) {
 		var d = document.createElement("div");
-		var pos = pile.getPosition();
-		var index = arr[indexOf(arr, pile)].id;
-		d.setAttribute("id", "pile"+index);
+		var pos;
+		if (pile) {
+			pos = pile.getPosition();
+		} else {
+			pos = new Position();
+		}
 		d.setAttribute("class", "pile");
-		d.style.position = "relative";
-		var item = document.getElementById("pile"+index) || document.getElementById(gameDivId);
-		d.style.left = (item.style.left==""?0:parseInt(item.style.left)) + pos.getLeftOffset()*130 - ((item.id!=gameDivId)?0:130);
-		d.style.top = (item.style.left==""?0:parseInt(item.style.top)) + pos.getTopOffset()*160 - ((item.id!=gameDivId)?160:0);
+		var item = divArray[indexOf(arr, pos.getItem())] || document.getElementById(gameDivId);
+		console.log(item.id!=gameDivId);
+		d.style.left = ((item.style.left=="")?0:parseInt(item.style.left)) + pos.getLeftOffset()*130 - ((item.id!=gameDivId)?0:130);
+		d.style.top = ((item.style.left=="")?0:parseInt(item.style.top)) + pos.getTopOffset()*160 - ((item.id!=gameDivId)?160:0);
 		var pileCards = pile.getCards();
+		var cardDivArray = [];
 		for (var i = 0; i<pileCards.length; i++) {
 			var card = createCard(pileCards[i]);
 			card.style.zIndex = i;
 			card.style.left = i/2;
 			card.style.top = i/2;
-			card.setAttribute("id", index);
 			d.appendChild(card);
+			cardDivArray.push(card);
 		}
 		offset_x += pile.getPosition()*120;
-		d.addEventListener("click", eventManager, true);
+		d.cardDivs = function() {
+			return cardDivArray;
+		};
 		return d;
 	}
+	
 	arr.contains = function (el) {
 		for (var i=0; i<arr.length; i++) if (arr[i]==el) return true;
 		return false;
 	}
 	var arrLength = arr.length;
-	/*
-	var placeholderPiles = piles;
 	while(0 < piles.length) {
 		for (var i=0; i<piles.length; i++) {
 			var item = piles[i].getPosition().getItem();
 			if (!item || (!arr.contains(piles[i]) && arr.contains(item))) {
 				arr.push(piles[i]);
-				console.log(piles[i] == placeholderPiles[i]);
-				arr[arr.length-1].id = indexOf(placeholderPiles, piles[i]);
 				piles.splice(i,1);
 			}
 		}
 		if(arr.length != arrLength) arrLength = arr.length;
 		else throw("Looks like at least two items are positioned relative to each other. Fix that.");
 	}
-	*/ // Sorting bit commented out because it's potentially problematic.
 	for (var i=0; i<arr.length; i++) {
-		gameContainer.insertBefore(pileDiv(piles[i]), null);
+		divArray.push(pileDiv(arr[i]));
+		document.getElementById(gameDivId).insertBefore(divArray[divArray.length-1], null);
 	}
 }

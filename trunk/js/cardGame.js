@@ -12,8 +12,20 @@ function CardGame(options) {
 	return deck;
     };
 
+    /* Adds an observer to the game; the observer will be notified of all 
+     * changes on the game.
+     */
     this.observe = function (observer) {
 	observers.push(observer);
+    };
+
+    /* If the given observer is currently observing the game, this removes it. */
+    this.removeObserver = function (observer) {
+	for (var i = 0; i < observers.length; i++) {
+	    if (observer == observers[i]) {
+		delete observers[i];
+	    }
+	}
     };
 
     /* Fires the given event to all of the observers. */
@@ -77,16 +89,16 @@ function Deck(cards) {
 function Card(rank, suit) {
     switch (rank) {
 	case 1:
-	rank = "a";
+	rank = "A";
 	break;
 	case 11:
-	rank = "j";
+	rank = "J";
 	break;
 	case 12:
-	rank = "q";
+	rank = "Q";
 	break;
 	case 13:
-	rank = "k";
+	rank = "K";
 	break;
 	/* Do nothing by default...*/
     }
@@ -98,7 +110,7 @@ function Card(rank, suit) {
 	return suit;
     };
     /* Returns the cards rank which is a number or a letter corresponding to
-     * various face cards (ace: a, jack: j, queen: q and king: k).
+     * various face cards (ace: A, jack: J, queen: Q and king: K).
      */
     this.getRank = function () {
 	return rank;
@@ -112,4 +124,11 @@ function Card(rank, suit) {
     this.toString = function () {
 	return rank + suit;
     };
+}
+
+/* An event encapsulating the change in the game state. This should give enough
+ * 
+ */
+function GameChangeEvent() {
+    
 }

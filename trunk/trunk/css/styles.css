@@ -2,4 +2,8 @@
     width:100px;
     height:140px;
     border-style:solid;
+    font-family:Verdana;
+    padding:4px;
+    font-size:85%;
+    margin-right:auto;
 }

@@ -26,11 +26,12 @@
 .c3 { position: absolute; left: 72px; top: 60px; }
 .c4 { position: absolute; left: 72px; top: 77px; }
 .c5 { position: absolute; left: 72px; top: 110px; }
+
 #game {
     background-image:url('../img/felt.jpg');
     border-style:solid;
-    width:600;
-    height:480;
+    width:1600;
+    height:700;
     padding:10px;
 }
 img {
@@ -39,9 +40,11 @@ img {
 }
 
 .pile {
+    position:absolute;
     height:160px;
     width:110px;
-    position:relative;
+    float : left;
+    margin : 5px;
 }
 .selected {
     background-color:#00FFFF;

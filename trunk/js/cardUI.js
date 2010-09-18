@@ -114,6 +114,10 @@ function newGame(game) {
     var piles = game.getPiles();
     var pilesUI = $A();
     var ces = $A();
+    var mi = 0;
+    var mm = 0;
+    var li = 6;
+    var bl = false;
 
     piles.each(function (element) {
 		   pilesUI.push(PileUI(element));
@@ -141,23 +145,25 @@ function newGame(game) {
     function PileUI(pile) {
 	var that = new Element("div", {"class" : "pile"});
 	var position = pile.getLocation() || new Location();
-	var item = position.getItem();
-	item = getUIOf(item);
 
-	if (!item) {
-	    that.setStyle("left : " + (position.getLeftOffset() - 1)
-			  * WIDTH);
-	    that.setStyle("top : " + position.getTopOffset() * HEIGHT);
-	} else {
-	    var left = parseInt(item.getStyle("left"));
-	    var top = parseInt(item.getStyle("top"));
-	    
-	    that.setStyle("left : " + 
-			  (left + position.getLeftOffset() * WIDTH) + "px");
-	    that.setStyle("top : " + 
-			  (top + (position.getTopOffset() - 1) * HEIGHT) + 
-			  "px");
+	blarg:
+	if (mi == li) {
+	    if (bl) {
+		li = 7;
+		mi = 1;
+		break blarg;
+	    }
+
+	    li = 7;
+	    mi = 0;
+	    mm++;
+	    bl = true;
 	}
+	var lo = WIDTH * mi + 10;
+	var to = mm * HEIGHT + 10;
+	that.setStyle({left : lo + "px"});
+	that.setStyle({top : to + "px"});
+	mi++;
 
 	that.getPile = function () {
 	    return pile;
@@ -198,6 +204,10 @@ function newGame(game) {
 	};
 
 	that.observe("click", obs.bind(that));
+
+	if (pile.isFaceDown()) {
+	    that.insert(new Element("div", {"class" : "cover"}));
+	}
 
 	return that;
     }

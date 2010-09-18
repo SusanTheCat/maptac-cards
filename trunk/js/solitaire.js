@@ -11,7 +11,7 @@ function Solitaire() {
     var spacer = new Spacer(game, 0.5, new Location(discardPile));
 
     var suitPiles = [];
-    suitPiles.push(new Pile(game, new Location(spacer),
+    suitPiles.push(new Pile(game, new Location(spacer, {left : 0}),
 			   {action : suitPileAct}));
     for (var i = 0; i < 3; i++) {
 	suitPiles.push(new Pile(game, new Location(suitPiles[i]),
@@ -21,7 +21,7 @@ function Solitaire() {
     var downPiles = [];
 
     var downPos = new Location(mainPile, {top : 1, left : 1});
-	var leftMostPile = new Pile(game, downPos, {action : normalPileAct});
+    var leftMostPile = new Pile(game, downPos, {action : normalPileAct});
     downPiles.push(leftMostPile);
     game.dealToPile(leftMostPile, 1);
 
@@ -37,8 +37,11 @@ function Solitaire() {
 	downPiles.push(upPile);
     }
 
+    game.dealRemainderToPile(mainPile);
+
     function normalPileAct(pile, card) {
 	if (card && card.getColor() != pile.getCard().getColor()) {
+	    console.log("Normal Blagr");
 	    pile.moveCard(card);
 	    return true;
 	} else if (!card) {

@@ -70,13 +70,13 @@ function CardGame(options) {
     /* Selects the specified card, firing the appropriate event. */
     this.selectCard = function (card) {
 	selectedCard = card;
-	fire(new GameChangeEvent({selected : card}));
+	fire(new GameChangeEvent({selected : card, cardMoved : false}));
     };
 
     /* Selects the top card of the specified pile. */
     this.selectCardOnPile = function (pile) {
 	selectedCard = pile.getCard();
-	fire(new GameChangeEvent({selected : card}));
+	fire(new GameChangeEvent({selected : card, cardMoved : false}));
     };
    
     /* Returns the card that is selected. */
@@ -97,8 +97,8 @@ function CardGame(options) {
 	    destination : pile2,
 	    card : card
 	};
-	var event = new GameChangeEvent(event);
 
+	var event = new GameChangeEvent({move : move});
 	fire(event);
     };
 
@@ -120,7 +120,8 @@ function CardGame(options) {
 	    card : card
 	};
 
-	var event = new GameChangeEvent(event);
+	var event = GameChangeEvent({move : move});
+
 	fire(event);
     };
 
@@ -165,14 +166,24 @@ function CardGame(options) {
 	var selectChange = options.selected ? true : false;
 	options.selected = options.selected || selectedCard;
 
-	options.move = options.move || {};
+	var move = options.move;
+	console.log("The move is:");
+	console.log(move);
 
-	/* Returns either null or the move of a card. The move will contain the 
-	 * source (where the card was), the destination (where it is now) and the
-	 * card itself.
-	 */
+	/* Returns whether a card was moved as part of this event. */
 	this.cardMoved = function () {
-	    return options.move;
+	    if (move) {
+		return move.pile1 != move.pile2;
+	    } else {
+		return false;
+	    }
+	};
+
+	/* Returns the move this event represents or null if there was no 
+	 * move. 
+	 */
+	this.getMove = function () {
+	    return move;
 	};
 
 	/* Returns the card that is selected after this event. */
@@ -182,16 +193,20 @@ function CardGame(options) {
 
 	/* Returns whether the selected card changed causing this event. */
 	this.selectChanged = function () {
-	    return selectChanged;
+	    return selectChange;
 	};
 
 	/* Returns all of the affected cards in an array. */
 	this.cardsMoved = function () {
-	    return options.cardsMoved || 
-		options.move ? [options.move.card] : [null];
+	    if (options.cardsMoved) {
+		return cardsMoved;
+	    } else if (move && (move.pile1 != move.pile2)) {
+		return [move.card];
+	    } else {
+		return null;
+	    }
 	};
     }
-
 }
 
 /* A deck object. The deck has cards but no physical pile. The default 
@@ -244,16 +259,16 @@ function Card(rank, suit) {
     var pile = null;// No pile by default.
 
     switch (rank) {
-	case 1:
+    case 1:
 	rank = "A";
 	break;
-	case 11:
+    case 11:
 	rank = "J";
 	break;
-	case 12:
+    case 12:
 	rank = "Q";
 	break;
-	case 13:
+    case 13:
 	rank = "K";
 	break;
 	/* Do nothing by default...*/
@@ -328,15 +343,16 @@ function Pile(parent, position, options) {
     // This is the action that is called when the pile gets a card or click.
     var action = options.action || function (pile, card) {
 	if (card) {
-	    parent.moveCard(card.getPile(), this);
+	    console.log(card);
+	    parent.moveCard(card.getPile(), pile);
 	} else {
-	    this.selectTopCard();
+	    pile.selectTopCard();
 	}
     };
 
     /* Sets the top card of the pile as selected. */
     this.selectTopCard = function () {
-	parent.setActiveCard(this.getCard());
+	parent.selectCard(this.getCard());
     };
 
     /* Moves the specified card from wherever it is to this pile. */
@@ -516,4 +532,24 @@ function Position(item, modification) {
     this.getZOffset = function () {
 	return modification.z || 0;
     };
+}
+
+/* Gets the next rank in order from ace to king. If king is given, this returns 
+ * null instead of wrapping over.
+ */
+function nextRank(rank) {
+    switch (rank) {
+    case "a":
+	return 2;
+    case 10:
+	return "j";
+    case "j":
+	return "q";
+    case "q":
+	return "k";
+    case "k":
+	return null;
+    default:
+	return rank++;
+    }
 }

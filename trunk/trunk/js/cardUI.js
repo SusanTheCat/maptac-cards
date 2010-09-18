@@ -138,6 +138,6 @@ function newGame(game) {
 	}
 	*/ // Sorting bit commented out because it's potentially problematic.
 	for (var i=0; i<arr.length; i++) {
-		gameContainer.insertBefore(pileDiv(arr[i]), null);
+		gameContainer.insertBefore(pileDiv(piles[i]), null);
 	}
 }

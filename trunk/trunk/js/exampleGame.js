@@ -12,8 +12,6 @@ function ExampleGame() {
 			pile2.addCard(deck[i]);
 		}
     }
-    game.addPile(pile1);
-    game.addPile(pile2);
 
     return game;
 }

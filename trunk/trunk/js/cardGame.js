@@ -71,7 +71,7 @@ function CardGame(options) {
      * method that uses "dealToPile".
      */
     this.dealRemainderToPile = function (pile) {
-	this.dealToPile(pile, cards.length);
+	this.dealToPile(pile, deck.length);
     };
 
     /* Selects the specified card, firing the appropriate event. */

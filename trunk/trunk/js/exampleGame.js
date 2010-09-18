@@ -14,4 +14,6 @@ function ExampleGame() {
 
     game.addPile(pile1);
     game.addPile(pile2);
+
+    return game;
 }

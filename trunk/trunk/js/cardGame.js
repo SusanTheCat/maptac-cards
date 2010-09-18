@@ -26,10 +26,11 @@ function CardGame(options) {
     };
 
     /* Adds the specified pile to the list of piles. Once again, avoid using this
-     * after the game starts properly...
+     * after the game starts properly... This returns the added pile.
      */
     this.addPile = function (pile) {
 	piles.push(pile);
+	return pile;
     };
 
     /* Removes the specified pile from the list of piles. If the given pile is 
@@ -47,7 +48,23 @@ function CardGame(options) {
      * that contains information about all of the cards dealt to that pile.
      */
     this.dealToPile = function (pile, number) {
-	//TODO: Implement...
+	var cardsMoved = [];
+	for (var i = 0; i < number; i++) {
+	    var card = deck.pop();
+	    cardsMoved.push(card);
+	    pile.addCard(card);
+	}
+
+	var event = new GameChangeEvent({cardsMoved : cardsMoved});
+	fire(event);
+    };
+
+    /* Deals all of the remaining cards in the deck to the given pile, firing
+     * the appropriate event as it does. This is bascially a convenience
+     * method that uses "dealToPile".
+     */
+    this.dealRemainderToPile = function (pile) {
+	this.dealToPile(pile, cards.length);
     };
 
     /* Selects the specified card, firing the appropriate event. */
@@ -97,8 +114,8 @@ function CardGame(options) {
 	    destination : pile,
 	    card : card
 	};
-	var event = new GameChangeEvent(event);
 
+	var event = new GameChangeEvent(event);
 	fire(event);
     };
 
@@ -143,6 +160,8 @@ function CardGame(options) {
 	var selectChange = options.selected ? true : false;
 	options.selected = options.selected || selectedCard;
 
+	options.move = options.move || {};
+
 	/* Returns either null or the move of a card. The move will contain the 
 	 * source (where the card was), the destination (where it is now) and the
 	 * card itself.
@@ -159,6 +178,12 @@ function CardGame(options) {
 	/* Returns whether the selected card changed causing this event. */
 	this.selectChanged = function () {
 	    return selectChanged;
+	};
+
+	/* Returns all of the affected cards in an array. */
+	this.cardsMoved = function () {
+	    return options.cardsMoved || 
+		options.move ? [options.move.card] : [null];
 	};
     }
 
@@ -277,9 +302,9 @@ function Card(rank, suit) {
  * passed to the pile. The default action is to select the top card if it is not
  * selected and to move the given card to the pile if there is one.
  */
-function Pile(parent, options) {
+function Pile(parent, position, options) {
     options = options || {};
-    var position = options.position || new Position();
+    position = position || new Position();
     var faceDown = faceDown ? true : false;
     var numCards = options.cards || 0;
 
@@ -318,6 +343,9 @@ function Pile(parent, options) {
      * (undefined is good here) should be given.
      */
     this.act = function (card) {
+	if (selectedCard) {
+	    card = selectedCard;
+	}
 	action(this, card);
     };
 
@@ -391,7 +419,15 @@ function Pile(parent, options) {
     this.pop = function () {
 	return cards.pop();
     };
-	
+
+    /* Returns whether the pile is empty (e.g. it has no cards in it) or not. */
+    this.isEmpty = function () {
+	return cards.length == 0;
+    };
+
+    if (parent) {
+	parent.addPile(this);
+    }	
 }
 
 /* This is much like a pile except that it has variable width and does not let
@@ -400,7 +436,7 @@ function Pile(parent, options) {
  * the piles; the given width should be a ratio of the pile where 1.0 is the same
  * as a pile.
  */
-function Spacer(width, position) {
+function Spacer(parent, width, position) {
     position = position || newosition();
 
     /* Returns the position of this spacer relative to something else...*/
@@ -415,6 +451,10 @@ function Spacer(width, position) {
     this.getWidth = function () {
 	return width;
     };
+
+    if (parent) {
+	parent.addPile(this);
+    }
 }
 
 /* This represents the position of an element on the playing field. It takes an
@@ -435,10 +475,10 @@ function Position(item, modification) {
     };
 
     /* Returns the left offset of the item. This is a ratio of the width of a
-     * pile.
+     * pile. The default left offset is 1!
      */
     this.getLeftOffset = function () {
-	return modification.left || 0;
+	return modification.left || 1;
     };
 
     /* Returns the top offset of the item. This is a ratio of the height of a

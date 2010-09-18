@@ -80,7 +80,15 @@ function newGame(game) {
 	var gameContainer = document.getElementById(gameDivId);
 	var piles = game.getPiles();
 	var arr = new Array();
-	var offset_x = 0;
+	var offset_x = 0;	
+	var digitRegexp = new RegExp("\\d+");
+	function eventManager(e) {
+		if(e.type=="onclick") {
+			var target = e.target.id;
+			var index = digitRegexp.exec(e.target.id);
+			arr[index].act();
+		}
+	}
 	function pileDiv(pile) {
 		var d = document.createElement("div");
 		d.setAttribute("id", "pile"+indexOf(arr, pile));
@@ -88,10 +96,8 @@ function newGame(game) {
 		d.style.position = "relative";
 		var pos = pile.getPosition();
 		var item = document.getElementById("pile"+indexOf(arr, pos.getItem())) || document.getElementById(gameDivId);
-		var m = new RegExp("\\d+");
-		d.style.left = m.exec(item.style.left) + pos.getLeftOffset()*130;
-		d.style.top = m.exec(item.style.top) + pos.getTopOffset()*160 - ((item.id!=gameDivId)?160:0);
-		d.onclick = pile.act();
+		d.style.left = digitRegexp.exec(item.style.left) + pos.getLeftOffset()*130;
+		d.style.top = digitRegexp.exec(item.style.top) + pos.getTopOffset()*160 - ((item.id!=gameDivId)?160:0);
 		var pileCards = pile.getCards();
 		for (var i = 0; i<pileCards.length; i++) {
 			var card = createCard(pileCards[i]);
@@ -101,6 +107,7 @@ function newGame(game) {
 			d.appendChild(card);
 		}
 		offset_x += pile.getPosition()*120;
+		d.addEventListener("onclick", eventManager, true);
 		return d;
 	}
 	arr.contains = function (el) {
@@ -120,6 +127,6 @@ function newGame(game) {
 		else throw("Looks like at least two items are positioned relative to each other. Fix that.");
 	}
 	for (var i=0; i<arr.length; i++) {
-		gameContainer.insertBefore(pileDiv(arr[i]));
+		gameContainer.insertBefore(pileDiv(arr[i]), null);
 	}
 }

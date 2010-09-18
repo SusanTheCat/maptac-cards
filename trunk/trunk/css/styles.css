@@ -22,3 +22,7 @@
 .c3 { position: absolute; left: 72px; top: 60px; }
 .c4 { position: absolute; left: 72px; top: 77px; }
 .c5 { position: absolute; left: 72px; top: 110px; }
+img {
+    height:30px;
+    width:30px;
+}

@@ -78,6 +78,11 @@ function CardGame(options) {
 	selectedCard = pile.getCard();
 	fire(new GameChangeEvent({selected : card}));
     };
+   
+    /* Returns the card that is selected. */
+    this.getSelectedCard = function () {
+	return selectedCard;
+    };
 
     /* Moves the top card of the specified pile to the top of the second 
      * specified pile.
@@ -287,6 +292,15 @@ function Card(rank, suit) {
     this.getPile = function () {
 	return pile;
     };
+
+    /* Returns the card's color which is either red or black. */
+    this.getColor = function () {
+	if (this.getSuit() == "h" || this.getSuit == "d") {
+	    return "red";
+	} 
+	
+	return "black";
+    };
 }
 
 /* Represents a physical pile of cards lying on the table. This doesn't actually
@@ -316,8 +330,18 @@ function Pile(parent, position, options) {
 	if (card) {
 	    parent.moveCard(card.getPile(), this);
 	} else {
-	    parent.setActiveCard(this.getCard());
+	    this.selectTopCard();
 	}
+    };
+
+    /* Sets the top card of the pile as selected. */
+    this.selectTopCard = function () {
+	parent.setActiveCard(this.getCard());
+    };
+
+    /* Moves the specified card from wherever it is to this pile. */
+    this.moveCard = function (card) {
+	parent.moveCardToPile(card, this);
     };
 
     if (numCards) {
@@ -343,8 +367,8 @@ function Pile(parent, position, options) {
      * (undefined is good here) should be given.
      */
     this.act = function (card) {
-	if (selectedCard) {
-	    card = selectedCard;
+	if (parent.getSelectedCard()) {
+	    card = parent.getSelectedCard();
 	}
 	action(this, card);
     };

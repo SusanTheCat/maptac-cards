@@ -12,6 +12,10 @@ function CardGame(options) {
 	return deck;
     };
 
+    this.observe = function (observer) {
+	observers.push(observer);
+    };
+
     /* Fires the given event to all of the observers. */
     function fire(event) {
 	for (var i = 0; i < observers.length; i++) {
@@ -74,6 +78,7 @@ function Card(rank, suit) {
     switch (rank) {
 	case 1:
 	rank = "a";
+	break;
 	case 11:
 	rank = "j";
 	break;

@@ -30,8 +30,8 @@
 #game {
     background-image:url('../img/felt.jpg');
     border-style:solid;
-    width:1600;
-    height:700;
+    width:950;
+    height:500;
     padding:10px;
 }
 img {
@@ -81,7 +81,15 @@ img {
 }
 
 .cover {
-	background:url('../img/cardBack.png');
-	background-repeat:no-repeat;
-	z-index:1000;
+    position : relative;
+    top : 10px;
+    left : 10px;
+    width : 120px;
+    height : 150px;
+    border-color : #808080;
+    border-style : dotted;
+    border-width : 1px;
+    background:url('../img/cardBack.png');
+    background-repeat:no-repeat;
+    z-index:1000;
 }

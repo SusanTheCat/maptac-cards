@@ -95,11 +95,11 @@ function newGame(game) {
 	}
 	function pileDiv(pile) {
 		var d = document.createElement("div");
-		d.setAttribute("id", "pile"+indexOf(arr, pile));
+		var pos = pile.getPosition();
+		var index = arr[indexOf(arr, pile)].id;
+		d.setAttribute("id", "pile"+index);
 		d.setAttribute("class", "pile");
 		d.style.position = "relative";
-		var pos = pile.getPosition();
-		var index = indexOf(arr, pos.getItem());
 		var item = document.getElementById("pile"+index) || document.getElementById(gameDivId);
 		d.style.left = (item.style.left==""?0:parseInt(item.style.left)) + pos.getLeftOffset()*130 - ((item.id!=gameDivId)?0:130);
 		d.style.top = (item.style.left==""?0:parseInt(item.style.top)) + pos.getTopOffset()*160 - ((item.id!=gameDivId)?160:0);
@@ -121,17 +121,22 @@ function newGame(game) {
 		return false;
 	}
 	var arrLength = arr.length;
+	/*
+	var placeholderPiles = piles;
 	while(0 < piles.length) {
 		for (var i=0; i<piles.length; i++) {
 			var item = piles[i].getPosition().getItem();
 			if (!item || (!arr.contains(piles[i]) && arr.contains(item))) {
 				arr.push(piles[i]);
+				console.log(piles[i] == placeholderPiles[i]);
+				arr[arr.length-1].id = indexOf(placeholderPiles, piles[i]);
 				piles.splice(i,1);
 			}
 		}
 		if(arr.length != arrLength) arrLength = arr.length;
 		else throw("Looks like at least two items are positioned relative to each other. Fix that.");
 	}
+	*/ // Sorting bit commented out because it's potentially problematic.
 	for (var i=0; i<arr.length; i++) {
 		gameContainer.insertBefore(pileDiv(arr[i]), null);
 	}

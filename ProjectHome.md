@@ -1,0 +1,1 @@
+This is a nice library for quickly developing and deploying web-based card games using JavaScript and related technologies.
